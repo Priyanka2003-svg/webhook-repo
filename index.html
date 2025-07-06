@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GitHub Events</title>
+</head>
+<body>
+  <h1>Recent GitHub Events</h1>
+  <ul id="eventList"></ul>
+
+  <script>
+    async function fetchEvents() {
+      const res = await fetch("/events");
+      const data = await res.json();
+
+      const ul = document.getElementById("eventList");
+      ul.innerHTML = "";
+
+      data.forEach(event => {
+        const time = new Date(event.timestamp).toUTCString();
+        let msg = "";
+
+        if (event.type === "PUSH") {
+          msg = `${event.author} pushed to ${event.to_branch} on ${time}`;
+        } else if (event.type === "PULL_REQUEST") {
+          msg = `${event.author} submitted a pull request from ${event.from_branch} to ${event.to_branch} on ${time}`;
+        }
+
+        const li = document.createElement("li");
+        li.textContent = msg;
+        ul.appendChild(li);
+      });
+    }
+
+    setInterval(fetchEvents, 15000);
+    fetchEvents();
+  </script>
+</body>
+</html>
